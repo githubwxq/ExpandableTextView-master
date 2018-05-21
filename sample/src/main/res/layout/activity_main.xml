@@ -25,45 +25,33 @@
             android:id="@+id/tv"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            app:DrawableAndTextGravity="left"
-            app:contentTextColor="@color/colorPrimary"
-            app:maxCollapsedLines="4">
+     >
+
+
+
 
             <LinearLayout
-                android:visibility="gone"
-                android:id="@+id/other_content"
+                android:visibility="visible"
+                android:id="@+id/expand_ll"
                 android:orientation="vertical"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content">
                 <TextView
-
+                    android:text="11111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111111"
+                    android:id="@+id/expandable_text"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp" />
+                    android:layout_height="wrap_content" />
                 <ImageView
-
                     android:background="#fff0"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp" />
-
-
-
-
-
+                    android:layout_height="100dp" />
             </LinearLayout>
 
-
-        </me.chensir.expandabletextview.ExpandableTextView>
-
-        <me.chensir.expandabletextview.ExpandableTextView
-            android:id="@+id/tv2"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            android:background="@color/colorAccent"
-            app:DrawableAndTextGravity="center"
-            app:maxCollapsedLines="5">
-
-
+            <TextView
+                android:id="@+id/expand_collapse"
+                android:text="展开"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
 
 
 
@@ -71,20 +59,37 @@
 
         </me.chensir.expandabletextview.ExpandableTextView>
 
-        <me.chensir.expandabletextview.ExpandableTextView
-            android:id="@+id/tv3"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="8dp"
-            app:DrawableAndTextGravity="right"
-            app:collapseDrawable="@mipmap/icon_collapsed"
-            app:contentTextColor="@color/colorPrimaryDark"
-            app:expandCollapseTextColor="@color/colorAccent"
-            app:expandDrawable="@mipmap/icon_expand"
-            app:expandText="更多"
-            app:maxCollapsedLines="6">
+        <!--<me.chensir.expandabletextview.ExpandableTextView-->
+            <!--android:id="@+id/tv2"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--android:background="@color/colorAccent"-->
+            <!--app:DrawableAndTextGravity="center"-->
+            <!--app:maxCollapsedLines="5">-->
 
-        </me.chensir.expandabletextview.ExpandableTextView>
+
+
+
+
+
+
+        <!--</me.chensir.expandabletextview.ExpandableTextView>-->
+
+        <!--<me.chensir.expandabletextview.ExpandableTextView-->
+            <!--android:id="@+id/tv3"-->
+            <!--android:layout_width="match_parent"-->
+            <!--android:layout_height="wrap_content"-->
+            <!--android:layout_marginTop="8dp"-->
+            <!--app:DrawableAndTextGravity="right"-->
+            <!--app:collapseDrawable="@mipmap/icon_collapsed"-->
+            <!--app:contentTextColor="@color/colorPrimaryDark"-->
+            <!--app:expandCollapseTextColor="@color/colorAccent"-->
+            <!--app:expandDrawable="@mipmap/icon_expand"-->
+            <!--app:expandText="更多"-->
+            <!--app:maxCollapsedLines="6">-->
+
+        <!--</me.chensir.expandabletextview.ExpandableTextView>-->
 
         <Button
             android:id="@+id/btn"

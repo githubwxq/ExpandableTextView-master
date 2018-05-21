@@ -31,7 +31,6 @@ import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.util.SparseBooleanArray;
 import android.view.Gravity;
-import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -49,6 +48,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
     /* The default animation duration */
     private static final int DEFAULT_ANIM_DURATION = 300;
 
+
     /* The default content text size*/
     private static final float DEFAULT_CONTENT_TEXT_SIZE = 16;
     private static final float DEFAULT_CONTENT_TEXT_LINE_SPACING_MULTIPLIER = 1.0f;
@@ -57,19 +57,40 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
     private static final int STATE_TV_GRAVITY_CENTER = 1;
     private static final int STATE_TV_GRAVITY_RIGHT = 2;
 
-    protected TextView mTv;
+//    protected TextView mTv;
+
+
 
     protected TextView mStateTv; // TextView to expand/collapse
+
+    public boolean ismRelayout() {
+        return mRelayout;
+    }
+
+    public void setmRelayout(boolean mRelayout) {
+        this.mRelayout = mRelayout;
+    }
 
     private boolean mRelayout;
 
     private boolean mCollapsed = true; // Show short version as default.
 
-    private int mCollapsedHeight;
+     private int mCollapsedHeight;
 
     private int mTextHeightWithMaxLines;
 
-    private int mMaxCollapsedLines;
+//    private int mMaxCollapsedLines;
+
+    public int getmMaxContentHeight() {
+        return mMaxContentHeight;
+    }
+
+    public void setmMaxContentHeight(int mMaxContentHeight) {
+        this.mMaxContentHeight = mMaxContentHeight;
+    }
+
+    //默任显示的高度 dp
+    private int mMaxContentHeight = 150;
 
     private int mMarginBetweenTxtAndBottom;
 
@@ -88,7 +109,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
     private float mContentTextSize;
 
     private int mContentTextColor;
-    
+
     private float mContentLineSpacingMultiplier;
 
     private int mStateTextColor;
@@ -102,10 +123,30 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
     private SparseBooleanArray mCollapsedStatus;
     private int mPosition;
 
+
+    private LinearLayout expand_content;
+
+
     private Runnable mRunnable = new Runnable() {
         @Override
         public void run() {
-            mMarginBetweenTxtAndBottom = getHeight() - mTv.getHeight();
+            //滑动距离  。。。
+//            mMarginBetweenTxtAndBottom = getHeight() - mTv.getHeight();
+            mMarginBetweenTxtAndBottom = expand_content.getHeight() - dip2px(mMaxContentHeight);
+            expand_content.getLayoutParams().height=dip2px(mMaxContentHeight);
+            expand_content.requestLayout();
+        }
+    };
+
+
+    private Runnable mRunnable2 = new Runnable() {
+        @Override
+        public void run() {
+            //滑动距离  。。。
+//            mMarginBetweenTxtAndBottom = getHeight() - mTv.getHeight();
+            mMarginBetweenTxtAndBottom = getHeight() - dip2px(mMaxContentHeight);
+            expand_content.getLayoutParams().height=dip2px(mMaxContentHeight);
+            expand_content.requestLayout();
         }
     };
 
@@ -134,7 +175,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-
+// more展开 为true
         if (mStateTv.getVisibility() != View.VISIBLE) {
             return;
         }
@@ -151,11 +192,13 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         mAnimating = true;
 
         Animation animation;
-        if (mCollapsed) {
-            animation = new ExpandCollapseAnimation(this, getHeight(), mCollapsedHeight);
+        if (mCollapsed) {   //当前关闭
+//            animation = new ExpandCollapseAnimation(this, getHeight(), mCollapsedHeight);
+            animation = new ExpandCollapseAnimation(expand_content, getHeight(), dip2px(mMaxContentHeight));
         } else {
-            animation = new ExpandCollapseAnimation(this, getHeight(), getHeight() +
-                    mTextHeightWithMaxLines - mTv.getHeight());
+            //展开动画 false
+            animation = new ExpandCollapseAnimation(expand_content, dip2px(mMaxContentHeight),
+                    mTextHeightWithMaxLines );
         }
 
         animation.setFillAfter(true);
@@ -174,7 +217,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
 
                 // notify the listener
                 if (mListener != null) {
-                    mListener.onExpandStateChanged(mTv, !mCollapsed);
+                    mListener.onExpandStateChanged(!mCollapsed);
                 }
             }
 
@@ -204,6 +247,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         // If no change, measure and return
+//        mTextHeightWithMaxLines = expand_content.getMeasuredHeight();
         if (!mRelayout || getVisibility() == View.GONE) {
             super.onMeasure(widthMeasureSpec, heightMeasureSpec);
             return;
@@ -213,24 +257,27 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         // Setup with optimistic case
         // i.e. Everything fits. No button needed
         mStateTv.setVisibility(View.GONE);
-        mTv.setMaxLines(Integer.MAX_VALUE);
+//        mTv.setMaxLines(Integer.MAX_VALUE);
 
         // Measure
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 
         // If the text fits in collapsed mode, we are done.
-        if (mTv.getLineCount() <= mMaxCollapsedLines) {
+//        if (mTv.getLineCount() <= mMaxCollapsedLines) {
+//            return;
+//        }
+     if (expand_content.getMeasuredHeight()<= dip2px(mMaxContentHeight)) {
             return;
         }
 
         // Saves the text height w/ max lines
-        mTextHeightWithMaxLines = getRealTextViewHeight(mTv);
+        mTextHeightWithMaxLines = expand_content.getMeasuredHeight();
 
         // Doesn't fit in collapsed mode. Collapse text view as needed. Show
-        // button.
-        if (mCollapsed) {
-            mTv.setMaxLines(mMaxCollapsedLines);
-        }
+        // button.//当前关闭显示展开
+//        if (mCollapsed) {
+//            mTv.setMaxLines(mMaxCollapsedLines);
+//        }
         mStateTv.setVisibility(View.VISIBLE);
 
         // Re-measure with new setup
@@ -238,9 +285,12 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
 
         if (mCollapsed) {
             // Gets the margin between the TextView's bottom and the ViewGroup's bottom
-            mTv.post(mRunnable);
+            expand_content.post(mRunnable);
             // Saves the collapsed height of this ViewGroup
-            mCollapsedHeight = getMeasuredHeight();
+            mCollapsedHeight = expand_content.getMeasuredHeight();
+        }else {
+
+//            mTv.post(mRunnable);
         }
     }
 
@@ -248,13 +298,8 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         mListener = listener;
     }
 
-    public void setText(@Nullable CharSequence text) {
-        mRelayout = true;
-        mTv.setText(text);
-        setVisibility(TextUtils.isEmpty(text) ? View.GONE : View.VISIBLE);
-    }
 
-    public void setText(@Nullable CharSequence text, @NonNull SparseBooleanArray collapsedStatus, int position) {
+    public void setFlag( @NonNull SparseBooleanArray collapsedStatus, int position) {
         mCollapsedStatus = collapsedStatus;
         mPosition = position;
         boolean isCollapsed = collapsedStatus.get(position, true);
@@ -262,35 +307,48 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         mCollapsed = isCollapsed;
         mStateTv.setText(mCollapsed ? mExpandString : mCollapsedString);
         mStateTv.setCompoundDrawablesWithIntrinsicBounds(mCollapsed ? mExpandDrawable : mCollapseDrawable, null, null, null);
-        setText(text);
+        //重新设置 状态返回最初的状态
+        mRelayout = true;
+
+        expand_content.getLayoutParams().height=ViewGroup.LayoutParams.WRAP_CONTENT;
         getLayoutParams().height = ViewGroup.LayoutParams.WRAP_CONTENT;
         requestLayout();
     }
 
-    @Nullable
-    public CharSequence getText() {
-        if (mTv == null) {
-            return "";
-        }
-        return mTv.getText();
+
+    @Override
+    protected void onSizeChanged(int w, int h, int oldw, int oldh) {
+        super.onSizeChanged(w, h, oldw, oldh);
+
+//        if(mCollapsed){  //可以展开的情况下
+////            expand_content.getLayoutParams().height=dip2px(mMaxContentHeight);
+//
+//            if (expand_content.getMeasuredHeight()<= dip2px(mMaxContentHeight)) {
+//                mStateTv.setVisibility(View.GONE);
+//            }else {
+//                mTextHeightWithMaxLines = expand_content.getMeasuredHeight();
+//                mStateTv.setVisibility(View.VISIBLE);
+//                expand_content.getLayoutParams().height=dip2px(mMaxContentHeight);
+//            }
+//        }else {
+//            expand_content.getLayoutParams().height=ViewGroup.LayoutParams.WRAP_CONTENT;
+//        }
+
     }
 
     private void init(Context context, AttributeSet attrs) {
 
-        LayoutInflater.from(context).inflate(R.layout.expandabletextview, this, true);
+//        LayoutInflater.from(context).inflate(R.layout.expandabletextview, this, true);
         // enforces vertical orientation
         setOrientation(LinearLayout.VERTICAL);
-
         // default visibility is gone
-        setVisibility(GONE);
-
+//        setVisibility(GONE);
         TypedArray typedArray = getContext().obtainStyledAttributes(attrs, R.styleable.ExpandableTextView);
-        mMaxCollapsedLines = typedArray.getInt(R.styleable.ExpandableTextView_maxCollapsedLines, MAX_COLLAPSED_LINES);
+//        mMaxCollapsedLines = typedArray.getInt(R.styleable.ExpandableTextView_maxCollapsedLines, MAX_COLLAPSED_LINES);
         mAnimationDuration = typedArray.getInt(R.styleable.ExpandableTextView_animDuration, DEFAULT_ANIM_DURATION);
         mContentTextSize = typedArray.getDimension(R.styleable.ExpandableTextView_contentTextSize, DEFAULT_CONTENT_TEXT_SIZE);
         mContentLineSpacingMultiplier = typedArray.getFloat(R.styleable.ExpandableTextView_contentLineSpacingMultiplier, DEFAULT_CONTENT_TEXT_LINE_SPACING_MULTIPLIER);
         mContentTextColor = typedArray.getColor(R.styleable.ExpandableTextView_contentTextColor, Color.BLACK);
-
         mExpandDrawable = typedArray.getDrawable(R.styleable.ExpandableTextView_expandDrawable);
         mCollapseDrawable = typedArray.getDrawable(R.styleable.ExpandableTextView_collapseDrawable);
         mStateTvGravity = typedArray.getInt(R.styleable.ExpandableTextView_DrawableAndTextGravity, STATE_TV_GRAVITY_RIGHT);
@@ -317,27 +375,28 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
     }
 
     private void findViews() {
-        mTv = (TextView) findViewById(R.id.expandable_text);
-        mTv.setTextColor(mContentTextColor);
-        mTv.setTextSize(mContentTextSize);
-        mTv.setLineSpacing(0, mContentLineSpacingMultiplier);
-        mTv.setOnClickListener(this);
 
         mStateTv = (TextView) findViewById(R.id.expand_collapse);
-        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
-        if (mStateTvGravity == STATE_TV_GRAVITY_LEFT) {
-            params.gravity = Gravity.START;
-        } else if (mStateTvGravity == STATE_TV_GRAVITY_CENTER) {
-            params.gravity = Gravity.CENTER_HORIZONTAL;
-        } else if (mStateTvGravity == STATE_TV_GRAVITY_RIGHT) {
-            params.gravity = Gravity.END;
-        }
-        mStateTv.setLayoutParams(params);
+        expand_content = (LinearLayout) findViewById(R.id.expand_ll);
+
+
+//        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
+//        if (mStateTvGravity == STATE_TV_GRAVITY_LEFT) {
+//            params.gravity = Gravity.START;
+//        } else if (mStateTvGravity == STATE_TV_GRAVITY_CENTER) {
+//            params.gravity = Gravity.CENTER_HORIZONTAL;
+//        } else if (mStateTvGravity == STATE_TV_GRAVITY_RIGHT) {
+//            params.gravity = Gravity.END;
+//        }
+//        mStateTv.setLayoutParams(params);
         mStateTv.setText(mCollapsed ? mExpandString : mCollapsedString);
         mStateTv.setTextColor(mStateTextColor);
+     //    箭头
         mStateTv.setCompoundDrawablesWithIntrinsicBounds(mCollapsed ? mExpandDrawable : mCollapseDrawable, null, null, null);
         mStateTv.setCompoundDrawablePadding(10);
         mStateTv.setOnClickListener(this);
+
+
     }
 
     private static boolean isPostLolipop() {
@@ -375,7 +434,7 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         @Override
         protected void applyTransformation(float interpolatedTime, Transformation t) {
             final int newHeight = (int) ((mEndHeight - mStartHeight) * interpolatedTime + mStartHeight);
-            mTv.setMaxHeight(newHeight - mMarginBetweenTxtAndBottom);
+//            mTv.setMaxHeight(newHeight - mMarginBetweenTxtAndBottom);
             mTargetView.getLayoutParams().height = newHeight;
             mTargetView.requestLayout();
         }
@@ -395,9 +454,18 @@ public class ExpandableTextView extends LinearLayout implements View.OnClickList
         /**
          * Called when the expand/collapse animation has been finished
          *
-         * @param textView   - TextView being expanded/collapsed
+         *  - TextView being expanded/collapsed
          * @param isExpanded - true if the TextView has been expanded
          */
-        void onExpandStateChanged(TextView textView, boolean isExpanded);
+        void onExpandStateChanged( boolean isExpanded);
     }
+
+    /**
+     * dp转px
+     */
+    public int dip2px(float dpValue) {
+        final float scale = this.getResources().getDisplayMetrics().density;
+        return (int) (dpValue * scale + 0.5f);
+    }
+
 }

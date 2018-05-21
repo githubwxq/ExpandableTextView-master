@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+import android.widget.TextView;
 
 import me.chensir.expandabletextview.ExpandableTextView;
 
@@ -14,9 +15,12 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ((ExpandableTextView) findViewById(R.id.tv)).setText(getString(R.string.dummy_text));
-        ((ExpandableTextView) findViewById(R.id.tv2)).setText(getString(R.string.dummy_text));
-        ((ExpandableTextView) findViewById(R.id.tv3)).setText(getString(R.string.dummy_text));
+        TextView expandable_text= (TextView) findViewById(R.id.expandable_text);
+
+//        expandable_text.setText(getString(R.string.dummy_text));
+        ((ExpandableTextView) findViewById(R.id.tv)).setmRelayout(true);
+//        ((ExpandableTextView) findViewById(R.id.tv2)).setText(getString(R.string.dummy_text));
+//        ((ExpandableTextView) findViewById(R.id.tv3)).setText(getString(R.string.dummy_text));
 
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override

@@ -49,7 +49,7 @@ public class SampleTextListAdapter extends BaseAdapter {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.expandableTextView.setText(sampleStrings[position], mCollapsedStatus, position);
+        viewHolder.expandableTextView.setFlag( mCollapsedStatus, position);
 
         return convertView;
     }
